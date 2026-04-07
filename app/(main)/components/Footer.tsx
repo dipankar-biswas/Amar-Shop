@@ -26,7 +26,7 @@ export const Footer = () => {
         { name: "About Us", path: "/about" },
         { name: "My Cart", path: "/cart" },
         { name: "Checkout", path: "/checkout" },
-        { name: "My Account", path: "/my-account" },
+        { name: "My Account", path: "/my-account/dashboard" },
       ],
     },
     policy: {
@@ -90,7 +90,7 @@ export const Footer = () => {
         </div>
       </section>
       
-      <section className="mx-auto grid w-full max-w-[1240px] grid-cols-2 gap-6 px-4 py-10 md:grid-cols-5">
+      <section className="container mx-auto grid w-full grid-cols-2 gap-6 px-4 py-10 md:grid-cols-5">
         {/* Help Column */}
         <div>
           <h3 className="mb-3 text-lg text-[22px] font-semibold text-[#ef553f]">

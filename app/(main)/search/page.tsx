@@ -7,7 +7,7 @@ const SearchPage = () => {
 //   const filtered = products.filter((p) => p.name.toLowerCase().includes(term));
   return (
     <div className="bg-[#f3f3f3] py-8">
-      {/* <div className="mx-auto w-full max-w-[1240px] px-4">
+      {/* <div className="container mx-auto w-full px-4">
         <h1 className="text-4xl text-[44px] font-semibold">Search Results</h1>
         <p className="mt-2 text-sm text-gray-500">Found {filtered.length} products for "{term}"</p>
         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">

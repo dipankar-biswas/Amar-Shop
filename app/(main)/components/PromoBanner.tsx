@@ -1,7 +1,7 @@
 export const PromoBanner = () => {
   return (
     <section className="py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto w-full px-4">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="group relative h-64 bg-gray-100 rounded-lg overflow-hidden">
             <img

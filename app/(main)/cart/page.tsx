@@ -8,10 +8,10 @@ const CartPage = () => {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 100 ? 0 : 5;
   return (
-    <div className="bg-[#f3f3f3] py-8">
-      <div className="mx-auto grid w-full max-w-[1240px] grid-cols-1 gap-6 px-4 lg:grid-cols-[1fr_380px]">
-        <section className="rounded border border-gray-300 bg-white p-4">
-          <h1 className="text-4xl text-[44px] font-semibold text-gray-800">Cart Summary</h1>
+    <div className="bg-white py-8">
+      <div className="container mx-auto px-4 grid w-full grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
+        <section className="rounded border border-gray-200 bg-white p-4">
+          <h1 className="text-4xl text-[22px] font-semibold text-gray-800">Cart Summary</h1>
           <div className="mt-4 rounded border border-green-300 bg-green-50 p-3 text-sm text-green-700">
             Use GET20OFF coupon code to get 20% off on minimum order above $100
           </div>
@@ -31,14 +31,14 @@ const CartPage = () => {
             ))}
           </div>
         </section>
-        <section className="rounded border border-gray-300 bg-white p-4">
-          <h2 className="text-3xl text-[36px] font-semibold">Cart totals</h2>
+        <section className="rounded border border-gray-200 bg-white p-4">
+          <h2 className="text-3xl text-[22px] font-semibold">Cart totals</h2>
           <div className="mt-4 space-y-4 text-sm">
             <div className="flex justify-between"><span>Subtotal</span><span>{taka(subtotal)}</span></div>
             <div className="flex justify-between"><span>Shipping</span><span>{taka(shipping)}</span></div>
             <div className="flex justify-between border-t border-gray-200 pt-3 text-lg font-semibold"><span>Total</span><span className="text-[#ef553f]">{taka(subtotal + shipping)}</span></div>
           </div>
-          <Link href="/checkout" className="mt-6 block rounded bg-[#ef553f] py-3 text-center font-semibold text-white">
+          <Link href="/checkout" className="mt-6 block rounded bg-[#ef553f] py-2 text-center font-semibold text-white">
             Proceed To Checkout
           </Link>
         </section>

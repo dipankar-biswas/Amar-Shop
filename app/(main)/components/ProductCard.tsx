@@ -8,9 +8,12 @@ import { useApp } from "../context/AppContext";
 
 export const ProductCard = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useApp();
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist, 
+    addToCompare, removeFromCompare, isInCompare, 
+    setActiveProduct, setIsQuickViewOpen } = useApp();
   
   const isWishlisted = isInWishlist(product?.id);
+  const isCompared = isInCompare(product?.id);
 
   const handleWishlistToggle = (e) => {
     e.stopPropagation();
@@ -26,21 +29,26 @@ export const ProductCard = ({ product }) => {
     addToCart(product);
   };
 
-  const handleCompare = (e) => {
+
+  const handleCompareToggle = (e) => {
     e.stopPropagation();
-    // Add compare functionality here
-    console.log("Compare product:", product.id);
+    if (isCompared) {
+      removeFromCompare(product.id);
+    } else {
+      addToCompare(product);
+    }
   };
 
   const handleQuickView = (e) => {
     e.stopPropagation();
-    // Add quick view functionality here
-    console.log("Quick view product:", product.id);
+    product.images = [product.image, product.hoverImage, product.hoverImage1]; // Ensure images array exists
+    setActiveProduct(product);
+    setIsQuickViewOpen(true);
   };
 
   return (
     <div 
-      className="relative h-[322px] overflow-visible"
+      className="relative h-[322px] overflow-visible z-40"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -66,8 +74,8 @@ export const ProductCard = ({ product }) => {
             <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
           </button>
           <button 
-            onClick={handleCompare} 
-            className="w-9 h-9 rounded-full bg-white text-gray-600 hover:bg-red-500 hover:text-white flex items-center justify-center shadow-md transition-colors"
+            onClick={handleCompareToggle} 
+            className={`w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-colors ${isCompared ? 'bg-red-500 text-white' : 'bg-white text-gray-600 hover:bg-red-500 hover:text-white'}`}
           >
             <BarChart2 className="w-4 h-4" />
           </button>
@@ -108,7 +116,7 @@ export const ProductCard = ({ product }) => {
               <Heart className={`h-3.5 w-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
             </button>
             <button 
-              onClick={handleCompare} 
+              onClick={handleCompareToggle} 
               className="rounded-full bg-[#ef553f] p-2 text-white shadow"
             >
               <BarChart3 className="h-3.5 w-3.5" />

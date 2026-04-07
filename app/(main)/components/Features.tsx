@@ -3,7 +3,7 @@ import { CreditCard, Package, RefreshCw, Truck } from "lucide-react";
 export const Features = () => {
   return (
     <section className="bg-gray-100 py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto w-full px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-lg flex items-center gap-3">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">

@@ -2,6 +2,14 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import Link from "next/link";
 import { CountdownTimer } from "./CountdownTimer";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+
+// Swiper CSS
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/pagination";
+
 export const DealOfDay = () => {
   const products = [
     {
@@ -174,55 +182,80 @@ export const DealOfDay = () => {
   ];
   return (
     <section className="py-12 bg-gray-50">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto w-full px-4">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold text-gray-800">Deal Of The Day</h2>
             <CountdownTimer days={126} hours={21} mins={39} secs={23} />
           </div>
           <div className="flex gap-2">
-            <button className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors">
+            <button className="swiper-btn-prev3 w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button className="w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-red-600 transition-colors">
+            <button className="swiper-btn-next3 w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.slice(9, 12).map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-lg p-4 flex gap-4 items-center"
-            >
-              <Link href={`/product/${product.id}`}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-24 h-24 object-contain"
-                />
-              </Link>
-              <div>
-                <Link
-                  href={`/product/${product.id}`}
-                  className="font-medium text-sm text-gray-800 line-clamp-2 hover:text-[#ef553f] transition-all duration-300"
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          slidesPerView={3}
+          spaceBetween={16}
+          loop={true}
+          speed={1500}
+          grabCursor={true}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
+          navigation={{
+            nextEl: ".swiper-btn-next3",
+            prevEl: ".swiper-btn-prev3",
+          }}
+          breakpoints={{
+            0: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            992: { slidesPerView: 3 },
+          }}
+          // className=""
+          // style={{overflow: "hidden"}}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {products.slice(8, 12).map((product) => (
+              <SwiperSlide key={product.id}>
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg p-4 flex gap-4 items-center"
                 >
-                  {product.name}
-                </Link>
-                <div className="flex items-center gap-1 my-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3 h-3 ${i < product.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                  <Link href={`/product/${product.id}`}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-24 h-24 object-contain"
                     />
-                  ))}
+                  </Link>
+                  <div>
+                    <Link
+                      href={`/product/${product.id}`}
+                      className="font-medium text-sm text-gray-800 line-clamp-2 hover:text-[#ef553f] transition-all duration-300"
+                    >
+                      {product.name}
+                    </Link>
+                    <div className="flex items-center gap-1 my-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-3 h-3 ${i < product.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[#ef553f] font-bold">${product.price}</p>
+                  </div>
                 </div>
-                <p className="text-[#ef553f] font-bold">${product.price}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+              </SwiperSlide>
+            ))}
+          </div>
+        </Swiper>
       </div>
     </section>
   );

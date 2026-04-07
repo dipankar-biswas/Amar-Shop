@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Banner } from "./components/Banner";
 import { Features } from "./components/Features";
 import { ProductCard } from "./components/ProductCard";
@@ -10,7 +10,16 @@ import { DealOfDay } from "./components/DealOfDay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+
+// Swiper CSS
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/pagination";
+
 export default function Home() {
+  const swiperRef = useRef(null);
   const products = [
     {
       id: 1,
@@ -24,6 +33,8 @@ export default function Home() {
         "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop",
       hoverImage:
         "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=300&h=300&fit=crop",
+      hoverImage1:
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=300&h=300&fit=crop",
       isSale: true,
       discount: 15,
       countdown: { days: 269, hours: 11, mins: 26, secs: 22 },
@@ -211,30 +222,49 @@ export default function Home() {
     },
   ];
 
-  const [activeTab, setActiveTab] = useState("Best Selling");
-  const tabs = ["Best Selling", "Popular", "Special Items"];
+  const [activeTab, setActiveTab] = useState("All"); // Default tab
+  // Define your tabs
+  // const tabs = ["Best Selling", "Popular", "Special Items"];
+  const tabs = ["All", "New", "Best Sellers", "Sale"];
+  // Filter products based on active tab
+  const filteredProducts = () => {
+    if (activeTab === "All") return products;
+    if (activeTab === "New") return products.filter((p) => p.isNew);
+    if (activeTab === "Best Sellers")
+      return products.filter((p) => p.isBestSeller);
+    if (activeTab === "Sale") return products.filter((p) => p.onSale);
+    return products;
+  };
+
+  const hasProducts = filteredProducts().length > 0;
 
   return (
     <>
       <Banner />
       <Features />
 
-      <section className={`py-12 position-relative`}>
-        <div
-          // ref={divRef}
-          className={`container mx-auto px-4 position-absolute left-0 top-0 transform translate-x-1`}
-          // style={{
-          //   height: divHeight ? `${divHeight}px` : "auto",
-          // }}
-        >
+      <section className="pt-12 pb-4 position-relative">
+        <div className="container mx-auto w-full px-4 relative group/pagination">
           <div className="flex flex-col md:flex-row items-center justify-between mb-8">
-            <h2 className="text-xl font-semibold text-gray-600">Trending Items</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Trending Items
+            </h2>
             <div className="flex gap-6 mt-4 md:mt-0">
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`text-sm font-medium transition-colors ${activeTab === tab ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                  onClick={() => {
+                    setActiveTab(tab);
+                    if (swiperRef.current && swiperRef.current.swiper) {
+                      swiperRef.current.swiper.slideTo(0);
+                      swiperRef.current.swiper.autoplay.start();
+                    }
+                  }}
+                  className={`text-sm font-semibold transition-colors pb-2 ${
+                    activeTab === tab
+                      ? "text-red-500 border-b-2 border-red-500"
+                      : "text-gray-500 hover:text-red-500"
+                  }`}
                 >
                   {tab}
                 </button>
@@ -242,11 +272,83 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {products.slice(0, 5).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {hasProducts ? (
+            <div className="relative">
+              <Swiper
+                ref={swiperRef}
+                modules={[Navigation, Autoplay]}
+                slidesPerView={2}
+                spaceBetween={16}
+                loop={true}
+                speed={1500}
+                grabCursor={true}
+                autoplay={{
+                  delay: 3500,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: false,
+                }}
+                navigation={{
+                  nextEl: ".swiper-btn-next",
+                  prevEl: ".swiper-btn-prev",
+                }}
+                breakpoints={{
+                  0: { slidesPerView: 2 },
+                  768: { slidesPerView: 3 },
+                  992: { slidesPerView: 5 },
+                }}
+                style={{
+                  overflow: "hidden",
+                  height: "380px",
+                }}
+                className="trending-swiper"
+                onInit={(swiper) => {
+                  swiper.autoplay.start();
+                }}
+              >
+                {filteredProducts()
+                  .slice(0, 6)
+                  .map((product) => (
+                    <SwiperSlide key={product.id}>
+                      <ProductCard product={product} />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+
+              {/* Navigation Buttons - Only show when products count > slidesPerView */}
+              {(() => {
+                const productsCount = filteredProducts().slice(0, 6).length;
+                const getCurrentSlidesPerView = () => {
+                  if (typeof window !== "undefined") {
+                    const width = window.innerWidth;
+                    if (width >= 992) return 5;
+                    if (width >= 768) return 3;
+                    return 2;
+                  }
+                  return 2;
+                };
+
+                const shouldShowButtons =
+                  productsCount > getCurrentSlidesPerView();
+
+                return (
+                  shouldShowButtons && (
+                    <div className="flex gap-2 justify-end opacity-0 group-hover/pagination:opacity-100 transition-opacity duration-300 absolute w-full top-[42%] transform -translate-y-[42%] z-30 pointer-events-none">
+                      <button className="swiper-btn-prev w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300 absolute -left-4 pointer-events-auto z-10">
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button className="swiper-btn-next w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300 absolute -right-4 pointer-events-auto z-10">
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )
+                );
+              })()}
+            </div>
+          ) : (
+            <p className="text-center text-red-500 col-span-full">
+              No products found for the selected category.
+            </p>
+          )}
         </div>
       </section>
 
@@ -255,29 +357,60 @@ export default function Home() {
       <DealOfDay />
       <CategoryPromo />
 
-      <section className="py-12">
-        <div className="container mx-auto px-4">
+      <section className="pt-12">
+        <div className="container mx-auto w-full px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-semibold text-gray-600">Regular Items</h2>
+            <h2 className="text-xl font-semibold text-gray-600">
+              Regular Items
+            </h2>
             <div className="flex gap-2">
-              <button className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors">
+              <button className="swiper-btn-prev1 w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300">
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <button className="w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-red-600 transition-colors">
+              <button className="swiper-btn-next1 w-8 h-8 rounded-full bg-[#ef553f] text-white flex items-center justify-center hover:bg-[#333333] transition-colors duration-300">
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {products.slice(5, 10).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <Swiper
+            modules={[Navigation, Autoplay]}
+            slidesPerView={5}
+            spaceBetween={16}
+            loop={true}
+            speed={1500}
+            grabCursor={true}
+            autoplay={{
+              delay: 3500,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              nextEl: ".swiper-btn-next1",
+              prevEl: ".swiper-btn-prev1",
+            }}
+            breakpoints={{
+              0: { slidesPerView: 2 },
+              768: { slidesPerView: 3 },
+              992: { slidesPerView: 5 },
+            }}
+            // className=""
+            style={{
+              overflow: "hidden",
+              height: "380px",
+            }}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {products.slice(5, 11).map((product) => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard key={product.id} product={product} />
+                </SwiperSlide>
+              ))}
+            </div>
+          </Swiper>
         </div>
       </section>
 
       <div className="pt-8 pb-12">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto w-full px-4">
           <h1 className="text-xl font-semibold text-gray-600 mb-8">Our Blog</h1>
           <div className="grid md:grid-cols-3 gap-6">
             {blogPosts.map((post) => (

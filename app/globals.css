@@ -24,3 +24,53 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* Smooth transitions for all interactive elements */
+.filter-section-enter {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.filter-section-enter-active {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.filter-section-exit {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.filter-section-exit-active {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Custom scrollbar for filter sections */
+.filter-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.filter-scrollbar::-webkit-scrollbar-thumb {
+  background: #ef553f;
+  border-radius: 10px;
+}
+
+/* Hover animations */
+.filter-option {
+  transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+  transform: translateX(4px);
+}
