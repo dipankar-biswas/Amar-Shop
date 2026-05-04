@@ -1,21 +1,23 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import { ProductCard } from "../components/ProductCard";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ProductFilter } from "../components/ProductFilter";
 import { Breadcrumb } from "../components/Breadcrumb";
+import { ProductCard } from "../components/ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ProductsPage = () => {
-  // const searchParams = useSearchParams();
+export const PageSet = ({category,searchTerm}) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+//   const category = searchParams.get("category");
+//   const searchTerm = searchParams.get("search")?.toLowerCase() ?? "";
 
-  // State management
   const [products] = useState([
     {
       id: 1,
       name: "Bass Dual EQ Bluetooth 5.0 Wireless Speaker",
-      category: "Electronics",
+      category: "Accessories",
       brand: "Bass",
       price: 160,
       originalPrice: 180,
@@ -47,6 +49,7 @@ const ProductsPage = () => {
       hoverImage:
         "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300&h=300&fit=crop",
       isNew: true,
+      isOffer: true,
     },
     {
       id: 3,
@@ -64,6 +67,7 @@ const ProductsPage = () => {
       hoverImage:
         "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=300&h=300&fit=crop",
       isSale: true,
+      isOffer: true,
     },
     {
       id: 4,
@@ -223,23 +227,28 @@ const ProductsPage = () => {
     brands: [],
     highlight: [],
     colors: [],
+    stones: [],
+    fragrances: [],
     priceRange: { min: 0, max: 2000 },
     rating: null,
   });
 
   const [sortBy, setSortBy] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  // Get search term from URL
-  // const searchTerm = searchParams.get("search")?.toLowerCase() ?? "";
-  const searchTerm = "";
+  const itemsPerPage = 12;
 
   // Apply all filters
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // Search filter
+    // Category filter from URL
+    if (category && category !== "null") {
+      filtered = filtered.filter(
+        (p) => p.category.toLowerCase() === category.toLowerCase(),
+      );
+    }
+
+    // Search filter from URL
     if (searchTerm) {
       filtered = filtered.filter(
         (p) =>
@@ -249,7 +258,7 @@ const ProductsPage = () => {
       );
     }
 
-    // Category filter
+    // Category filter from sidebar
     if (filters.categories && filters.categories.length > 0) {
       filtered = filtered.filter((p) =>
         filters.categories.includes(p.category),
@@ -285,7 +294,7 @@ const ProductsPage = () => {
     }
 
     return filtered;
-  }, [products, searchTerm, filters]);
+  }, [products, category, searchTerm, filters]);
 
   // Apply sorting
   const sortedProducts = useMemo(() => {
@@ -321,7 +330,7 @@ const ProductsPage = () => {
   // Reset page when filters or search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filters, sortBy]);
+  }, [category, searchTerm, filters, sortBy]);
 
   // Handle filter changes from ProductFilter component
   const handleFilterChange = (newFilters) => {
@@ -334,23 +343,25 @@ const ProductsPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Get page title based on search or filters
+  // Get page title
   const getPageTitle = () => {
     if (searchTerm) return `Search Results for "${searchTerm}"`;
-    if (filters.categories.length === 1) return filters.categories[0];
-    if (filters.categories.length > 1)
-      return `${filters.categories.length} Categories`;
-    return "All Products";
+    if (category && category !== "null") return `${category} Products`;
+    return "All Categories Products";
+  };
+
+  // Get breadcrumb page name
+  const getBreadcrumbPage = () => {
+    if (searchTerm) return "Search";
+    if (category && category !== "null") return category;
+    return "Products";
   };
 
   return (
-    <div className="bg-gray-50 py-4 min-h-screen">
+    <div className="bg-gray-50 py-8 min-h-screen">
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
-        <Breadcrumb
-          page={searchTerm ? "Search" : "Products"}
-          className="py-2"
-        />
+        <Breadcrumb page={getBreadcrumbPage()} className="py-2" />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] mt-4">
           {/* Sidebar with Filters */}
@@ -366,10 +377,11 @@ const ProductsPage = () => {
                 <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
                   {getPageTitle()}
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="mt-2 text-sm text-gray-500">
                   Showing {currentProducts.length} of {sortedProducts.length}{" "}
                   products
                   {searchTerm && ` for "${searchTerm}"`}
+                  {category && !searchTerm && ` in ${category}`}
                 </p>
               </div>
 
@@ -479,7 +491,9 @@ const ProductsPage = () => {
                   <p className="text-gray-500 mb-4">
                     {searchTerm
                       ? `No results found for "${searchTerm}"`
-                      : "No products match your selected filters"}
+                      : category && category !== "null"
+                        ? `No products found in ${category} category`
+                        : "No products match your selected filters"}
                   </p>
                   <button
                     onClick={() => {
@@ -488,10 +502,14 @@ const ProductsPage = () => {
                         brands: [],
                         highlight: [],
                         colors: [],
+                        stones: [],
+                        fragrances: [],
                         priceRange: { min: 0, max: 2000 },
                         rating: null,
                       });
                       setSortBy("default");
+                      // Clear URL params
+                      router.push("/search");
                     }}
                     className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                   >
@@ -507,4 +525,3 @@ const ProductsPage = () => {
   );
 };
 
-export default ProductsPage;

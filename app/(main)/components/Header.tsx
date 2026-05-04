@@ -34,7 +34,7 @@ export const Header = ({ openCart, wishlistCount, onWishlistClick }) => {
           href="/"
           className="text-[44px] font-bold leading-none text-[#ef553f]"
         >
-          SM<span className="text-[30px] text-gray-700">Craft</span>
+          AMAR<span className="text-[30px] text-gray-700">shop</span>
         </Link>
 
         <form

@@ -211,7 +211,7 @@ export const Navbar = ({
 
   return (
     <nav
-      className={`sticky top-0 z-40 border-y border-gray-200 bg-[#f3f3f3] transition-all ${isScrolled ? "shadow-md" : ""}`}
+      className={`sticky top-0 z-50 border-y border-gray-200 bg-[#f3f3f3] transition-all ${isScrolled ? "shadow-md" : ""}`}
     >
       <div
         className={`container mx-auto flex justify-between w-full items-center gap-8 px-4 text-sm text-gray-700 transition-all ${isScrolled ? "py-2" : "py-3"}`}

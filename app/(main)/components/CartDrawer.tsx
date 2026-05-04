@@ -89,10 +89,10 @@ export const CartDrawer = ({ open, onClose }) => {
                     </p>
                     
                     {/* Quantity Controls */}
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 border border-gray-300 inline-flex rounded">
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                        className="p-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                        className="p-1 border-r border-gray-300 hover:bg-gray-200 transition-colors"
                       >
                         <Minus size={12} />
                       </button>
@@ -101,7 +101,7 @@ export const CartDrawer = ({ open, onClose }) => {
                       </span>
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                        className="p-1 border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                        className="p-1 border-l border-gray-300 hover:bg-gray-200 transition-colors"
                       >
                         <Plus size={12} />
                       </button>
